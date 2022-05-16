@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { FlatList } from "react-native";
 import { HighlightCard } from "../../components/HighlightCard";
+import { getBottomSpace } from "react-native-iphone-x-helper";
 import {
   TransactionCard,
   TransactionCardProps,
 } from "../../components/TransactionCard";
 
-import { getBottomSpace } from "react-native-iphone-x-helper";
+
 import {
   Container,
   Header,
@@ -20,7 +21,6 @@ import {
   HighlightCards,
   Transactions,
   Title,
-  TransactionList,
 } from "./styles";
 
 export interface DataListProps extends TransactionCardProps {
@@ -28,76 +28,70 @@ export interface DataListProps extends TransactionCardProps {
 }
 
 export function Dashboard() {
-  const [transactions, setTransactions] = useState<DataListProps[]>([]);
-  const [transactionType, setTransactionType] = useState("");
-
-  let entriesTotal = 0;
-  let expensiveTotal = 0;
-
-  function handleTransactionTypeSelect(type: "positive" | "negative") {
-    setTransactionType(type);
-  }
-
-  handleTransactionTypeSelect("positive");
-
-  const data = [
+  
+  const data: DataListProps[] = [
     {
       id: "1",
-      name: "Desenvolvimento de Site",
-      amount: "R$ 4.000,00",
-      category: "Vendas",
-      date: String(new Date()),
-      type: transactionType,
+      name: "Pagamento",
+      amount: "R$ 1.836,00",
+      category: {
+        name: "Salário",
+        icon: "dollar-sign",
+      },
+      date: "06/05/2022",
+      type: "positive",
     },
 
     {
       id: "2",
       name: "Conta de Luz",
       amount: "R$ 153,00",
-      category: "Vendas",
-      date: String(new Date()),
-      type: transactionType,
+      category: {
+        name: "Contas",
+        icon: "shopping-bag",
+      },
+      date: "13/05/2022",
+      type: "negative",
     },
 
     {
       id: "3",
       name: "Internet",
       amount: "R$ 20,00",
-      category: "Vendas",
-      date: String(new Date()),
-      type: transactionType,
+      category: {
+        name: "Contas",
+        icon: "shopping-bag",
+      },
+      date: "13/05/2022",
+      type: "negative",
+    },
+
+    {
+      id: "4",
+      name: "Sky",
+      amount: "R$ 486,00",
+      category: {
+        name: "Contas",
+        icon: "shopping-bag",
+      },
+      date: "13/05/2022",
+      type: "negative",
+    },
+
+    {
+      id: "5",
+      name: "FGTS",
+      amount: "R$ 1.200,00",
+      category: {
+        name: "Salário",
+        icon: "dollar-sign",
+      },
+      date: "13/05/2022",
+      type: "positive",
     },
   ];
 
-  setTransactions(data as DataListProps[]);
-
-  const transactionsFormatted: DataListProps[] = transactions.map(
-    ({ amount, date, id, name, type, category }: DataListProps) => {
-      if (type === "positive") entriesTotal += Number(amount);
-      else expensiveTotal += Number(amount);
-      const amountFormatted = Number(amount).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
-      const dateFormatted = Intl.DateTimeFormat("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      }).format(new Date(date));
-
-      return {
-        id,
-        name,
-        amount: amountFormatted,
-        date: dateFormatted,
-        type,
-        category,
-      };
-    }
-  );
   
-  setTransactions(transactionsFormatted);
-
   return (
     <Container>
       <Header>
@@ -142,14 +136,17 @@ export function Dashboard() {
       <Transactions>
         <Title>Listagem</Title>
 
-        <FlatList
-          data={transactions}
-          renderItem={({ item }) => <TransactionCard data={item} />}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingBottom: getBottomSpace(),
-          }}
-        />
+      <FlatList
+        data={data}
+        keyExtractor={item => item.id}
+        renderItem={({ item }) => <TransactionCard data={item} />}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={
+          {
+            paddingBottom: getBottomSpace()
+          }
+        }
+      />
       </Transactions>
     </Container>
   );
